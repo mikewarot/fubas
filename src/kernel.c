@@ -42,7 +42,7 @@ int main() {
    do {
      printf("\033[0;32m$$%d\033[0m ",++command_input_count);        // start off the user with a nice prompt
      fgets(command_line_buffer,500,stdin);
-       printf("You said :%s",command_line_buffer);
+       printf("You said: %s\n",command_line_buffer);
        newlinkedstring = (linkedstring*) malloc(sizeof(linkedstring));
        if (newlinkedstring == NULL) {
           printf("Ran out of memory\n");
@@ -58,11 +58,21 @@ int main() {
           newlinkedstring->next = NULL; 
           lastlinkedstring = newlinkedstring;
 
-          sprintf(newlinkedstring->key,"%i",command_input_count);
+          sprintf(newlinkedstring->key,"$$%i",command_input_count);
           strcpy(newlinkedstring->value,command_line_buffer);
+          if (command_line_buffer[0] == '\n') {
+             done=1; 
+          };
        }
+   } while(done == 0);
 
-
-   } while(!done);
+   newlinkedstring = headlinkedstring;
+   while (newlinkedstring != NULL)
+   {
+      /* code */
+      printf("Key: %s  Value: %s",newlinkedstring->key,newlinkedstring->value);
+      newlinkedstring = newlinkedstring->next;
+   }
+   
    return 0;
 }
