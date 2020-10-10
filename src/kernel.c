@@ -47,38 +47,48 @@ linkedstring* findkey(char* searchkey) {
    return currentkey;
 }
 
+linkedstring* addkeyvalue(char* key, char* value) {
+   linkedstring* tmplinkedstring;
+   tmplinkedstring = (linkedstring*) malloc(sizeof(linkedstring));
+   if (tmplinkedstring != NULL) {
+      tmplinkedstring->prev = lastlinkedstring;
+      if (tmplinkedstring->prev == NULL) {
+         headlinkedstring = tmplinkedstring;
+      } else {
+         tmplinkedstring->prev->next = tmplinkedstring;
+      }
+      tmplinkedstring->next = NULL; 
+      lastlinkedstring = tmplinkedstring;
+      strcpy(tmplinkedstring->key,key);
+      strcpy(tmplinkedstring->value,value);
+   }
+   return tmplinkedstring;
+}
+
 int main() {
    do {
       printf("\033[0;32m$$%d\033[0m ",++command_input_count);        // start off the user with a nice prompt
+
       fgets(command_line_buffer,500,stdin);
       int len = strlen(command_line_buffer);
       if ((len > 0) && (command_line_buffer[len-1] == '\n')) command_line_buffer[len-1] = '\0';
+
+      char newkey[20];
+      sprintf(newkey,"$i%i",command_input_count);
+      if (addkeyvalue(newkey,command_line_buffer) == NULL) done=1;
+
       foundstring = findkey(command_line_buffer);
       if (foundstring != NULL) {
          strcpy(command_line_buffer,foundstring->value);
       }
-      printf("You said: >>%s<<\n",command_line_buffer);
-      newlinkedstring = (linkedstring*) malloc(sizeof(linkedstring));
-      if (newlinkedstring == NULL) {
-          printf("Ran out of memory\n");
-          done = 1;
-      } 
-      else {
-         newlinkedstring->prev = lastlinkedstring;
-         if (newlinkedstring->prev == NULL) {
-            headlinkedstring = newlinkedstring;
-         } else {
-            newlinkedstring->prev->next = newlinkedstring;
-         }
-         newlinkedstring->next = NULL; 
-         lastlinkedstring = newlinkedstring;
 
-         sprintf(newlinkedstring->key,"$$%i",command_input_count);
-         strcpy(newlinkedstring->value,command_line_buffer);
-         if ((strlen(command_line_buffer) == 0) || (command_line_buffer[0] == '\n')) {
-            done=1; 
-         };
-      }
+      sprintf(newkey,"$o%i",command_input_count);
+      if (addkeyvalue(newkey,command_line_buffer) == NULL) done=1;
+
+      printf("You said: >>%s<<\n",command_line_buffer);
+
+
+      if (strlen(command_line_buffer) == 0) done=1;
    } while(done == 0);
 
    newlinkedstring = headlinkedstring;
