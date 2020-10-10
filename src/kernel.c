@@ -37,40 +37,55 @@ typedef struct linkedstring{
 linkedstring* headlinkedstring = NULL;
 linkedstring* lastlinkedstring = NULL;
 linkedstring* newlinkedstring = NULL;
+linkedstring* foundstring = NULL;
+
+linkedstring* findkey(char* searchkey) {
+   linkedstring* currentkey = headlinkedstring;  // start at first key/value pair in the list
+   while ((currentkey != NULL) && (strcasecmp(currentkey->key,searchkey)!=0)) {
+      currentkey = currentkey->next;
+   }
+   return currentkey;
+}
 
 int main() {
    do {
-     printf("\033[0;32m$$%d\033[0m ",++command_input_count);        // start off the user with a nice prompt
-     fgets(command_line_buffer,500,stdin);
-       printf("You said: %s\n",command_line_buffer);
-       newlinkedstring = (linkedstring*) malloc(sizeof(linkedstring));
-       if (newlinkedstring == NULL) {
+      printf("\033[0;32m$$%d\033[0m ",++command_input_count);        // start off the user with a nice prompt
+      fgets(command_line_buffer,500,stdin);
+      int len = strlen(command_line_buffer);
+      if ((len > 0) && (command_line_buffer[len-1] == '\n')) command_line_buffer[len-1] = '\0';
+      foundstring = findkey(command_line_buffer);
+      if (foundstring != NULL) {
+         strcpy(command_line_buffer,foundstring->value);
+      }
+      printf("You said: >>%s<<\n",command_line_buffer);
+      newlinkedstring = (linkedstring*) malloc(sizeof(linkedstring));
+      if (newlinkedstring == NULL) {
           printf("Ran out of memory\n");
           done = 1;
-       } 
-       else {
-          newlinkedstring->prev = lastlinkedstring;
-          if (newlinkedstring->prev == NULL) {
-             headlinkedstring = newlinkedstring;
-          } else {
-             newlinkedstring->prev->next = newlinkedstring;
-          }
-          newlinkedstring->next = NULL; 
-          lastlinkedstring = newlinkedstring;
+      } 
+      else {
+         newlinkedstring->prev = lastlinkedstring;
+         if (newlinkedstring->prev == NULL) {
+            headlinkedstring = newlinkedstring;
+         } else {
+            newlinkedstring->prev->next = newlinkedstring;
+         }
+         newlinkedstring->next = NULL; 
+         lastlinkedstring = newlinkedstring;
 
-          sprintf(newlinkedstring->key,"$$%i",command_input_count);
-          strcpy(newlinkedstring->value,command_line_buffer);
-          if (command_line_buffer[0] == '\n') {
-             done=1; 
-          };
-       }
+         sprintf(newlinkedstring->key,"$$%i",command_input_count);
+         strcpy(newlinkedstring->value,command_line_buffer);
+         if ((strlen(command_line_buffer) == 0) || (command_line_buffer[0] == '\n')) {
+            done=1; 
+         };
+      }
    } while(done == 0);
 
    newlinkedstring = headlinkedstring;
    while (newlinkedstring != NULL)
    {
       /* code */
-      printf("Key: %s  Value: %s",newlinkedstring->key,newlinkedstring->value);
+      printf("Key: %s\tValue: %s\n",newlinkedstring->key,newlinkedstring->value);
       newlinkedstring = newlinkedstring->next;
    }
    
