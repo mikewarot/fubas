@@ -18,8 +18,51 @@
 
 
 #include <stdio.h> 
+#include <stdlib.h>
+#include <string.h>
+
+int done = 0;                  
+int command_input_count = 0;    // every line the user types in has a serial number, so they can use it later
+char command_line_buffer[500];  // reasonably long input buffer, hopefully never actually filled
+
+/*
+  Put previous command lines into a doubly linked list
+*/
+typedef struct linkedstring{
+   struct linkedstring *prev, *next;
+   char key[20];
+   char value[500];
+} linkedstring;
+
+linkedstring* headlinkedstring = NULL;
+linkedstring* lastlinkedstring = NULL;
+linkedstring* newlinkedstring = NULL;
+
 int main() {
-   // printf() displays the string inside quotation
-   printf("Hello, World!\n");
+   do {
+     printf("\033[0;32m$$%d\033[0m ",++command_input_count);        // start off the user with a nice prompt
+     fgets(command_line_buffer,500,stdin);
+       printf("You said :%s",command_line_buffer);
+       newlinkedstring = (linkedstring*) malloc(sizeof(linkedstring));
+       if (newlinkedstring == NULL) {
+          printf("Ran out of memory\n");
+          done = 1;
+       } 
+       else {
+          newlinkedstring->prev = lastlinkedstring;
+          if (newlinkedstring->prev == NULL) {
+             headlinkedstring = newlinkedstring;
+          } else {
+             newlinkedstring->prev->next = newlinkedstring;
+          }
+          newlinkedstring->next = NULL; 
+          lastlinkedstring = newlinkedstring;
+
+          sprintf(newlinkedstring->key,"%i",command_input_count);
+          strcpy(newlinkedstring->value,command_line_buffer);
+       }
+
+
+   } while(!done);
    return 0;
 }
