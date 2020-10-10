@@ -42,7 +42,7 @@ int main() {
    do {
      printf("\033[0;32m$$%d\033[0m ",++command_input_count);        // start off the user with a nice prompt
      fgets(command_line_buffer,500,stdin);
-       printf("You said: r%s\n",command_line_buffer);
+       printf("You said: %s\n",command_line_buffer);
        newlinkedstring = (linkedstring*) malloc(sizeof(linkedstring));
        if (newlinkedstring == NULL) {
           printf("Ran out of memory\n");
